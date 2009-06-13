@@ -4,42 +4,38 @@ require 'mechanize'
 module Purevolume
   VERSION = '0.1.1'
   
-  # TODO
-  # * type of account
-  # * Profile Page url
-  
-  
   class Client
-    SITE     = 'http://purevolume.com'
-    LOGIN    = '/login'
-    POSTS    = '/dashboard?s=posts&tab='
-    ADD      = 'add_post'
-    LIST     = 'posts'
-    CATEGORY = 'General'
-    SUCCESS  = 'div.success_message'
+    SITE      = 'http://www.purevolume.com'
+    LOGIN     = '/login'
+    POSTS     = '/dashboard?s=posts&tab='
+    ADD       = 'add_post'
+    LIST      = 'posts'
+    CATEGORY  = 'General'
+    SUCCESS   = 'div.success_message'
+    DASHBOARD = '/dashboard'
     
     attr_reader   :valid
   
     def initialize username, password
-      @agent    = WWW::Mechanize.new
-      @agent.user_agent_alias = 'Mac Safari'
-      @username = username
-      @password = password
-      @valid    = authenticate
-      # @type     = nil
+      @agent      = WWW::Mechanize.new
+      @username   = username
+      @password   = password
+      # Make sure I need these!
+      @dashboard  = @type = @profile = @blog = @name = nil
+      @valid      = authenticated?
     end
 
     def can_post?
-      !add_page.search(   "form[action='#{POSTS}#{ADD}']" ).empty?
+      !add_post_page.search(   "form[action='#{POSTS}#{ADD}']" ).empty?
     end
     
     def login_page?
-      !login_page.search( "form[action='#{LOGIN}']"       ).empty?
+      !login_page.search(      "form[action='#{LOGIN}']"       ).empty?
     end
     
     def post title, body
-      response = false
-      if post_form = add_page.forms_with( :action =>  POSTS + ADD ).first
+      response                = false
+      if post_form            = add_post_page.forms_with( :action =>  POSTS + ADD ).first
         category              = post_form.field_with( :name => 'category' )
         category.options.each { |opt| opt.select if opt.value == CATEGORY } if category
         post_form.blog_title  = title
@@ -49,20 +45,38 @@ module Purevolume
       response
     end
     
+    def profile_url
+      @dashboard.search(".dashboard_link_dropdown_item a").each do |link|
+        @profile = link['href'] if link.content == "Profile"
+      end
+      @profile
+    end
+
+    def profile_name
+      @name = @dashboard.at( "a[href='#{DASHBOARD}'] span" ).content.sub( "Logged in as ", "" ) rescue nil
+    end
+    
+    def account_info
+      if @valid
+        {"rsp"=>{"site"=>{ "name"=>@name, "blog"=>@blog, "type"=>@type , "profile"=>@profile }, "stat"=>"ok"}}
+      end
+    end
+    
   private
     
-    def authenticate
+    def authenticated?
       if login_form         = login_page.forms_with( :action => LOGIN ).first
         login_form.username = @username
         login_form.password = @password
-        @agent.submit         login_form
-        # Consider checking for account URL type here?
+        response_page       = @agent.submit( login_form )
+        @dashboard          = response_page if response_page.uri.to_s == SITE + DASHBOARD
       end
+      # Raise if you can't login?
       can_post?
     end
     
-    def add_page;     @agent.get( SITE + POSTS + ADD );       end
-    def login_page;   @agent.get( SITE + LOGIN );             end
+    def add_post_page;       @agent.get( SITE + POSTS + ADD );    end
+    def login_page;          @agent.get( SITE + LOGIN );          end
     
   end
 end
