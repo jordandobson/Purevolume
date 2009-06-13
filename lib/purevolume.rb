@@ -26,6 +26,7 @@ module Purevolume
       @username = username
       @password = password
       @valid    = authenticate
+      # @type     = nil
     end
 
     def can_post?
@@ -55,6 +56,7 @@ module Purevolume
         login_form.username = @username
         login_form.password = @password
         @agent.submit         login_form
+        # Consider checking for account URL type here?
       end
       can_post?
     end

@@ -1,32 +1,32 @@
 = purevolume
 
-* FIX (url)
+* http://github.com/jordandobson/Purevolume/tree/master
 
 == DESCRIPTION:
 
-FIX (describe your package)
+A gem to post news/blog updates to Purevolume.com
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+* Post Title and Text to Purevolume.com
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+* Coming Soon
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* Mechanize & Mocha (for tests)
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+* Not Yet Available
 
 == LICENSE:
 
 (The MIT License)
 
-Copyright (c) 2009 FIX
+Copyright (c) 2009 Jordan Dobson
 
 Permission is hereby granted, free of charge, to any person obtaining
 a copy of this software and associated documentation files (the
