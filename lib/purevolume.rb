@@ -3,15 +3,10 @@ require 'mechanize'
 
 module Purevolume
   VERSION = '0.1.1'
-
-  class AuthError < StandardError; end
-  # class PostError < StandardError; end
-  # class HostError < StandardError; end
-  # class TagsError < StandardError; end
   
   # TODO
   # * type of account
-  # * Profile Page
+  # * Profile Page url
   
   
   class Client
@@ -21,6 +16,7 @@ module Purevolume
     ADD      = 'add_post'
     LIST     = 'posts'
     CATEGORY = 'General'
+    SUCCESS  = 'div.success_message'
     
     attr_reader   :valid
   
@@ -32,8 +28,6 @@ module Purevolume
       @valid    = authenticate
     end
 
-  # private
-
     def can_post?
       !add_page.search(   "form[action='#{POSTS}#{ADD}']" ).empty?
     end
@@ -43,19 +37,18 @@ module Purevolume
     end
     
     def post title, body
-      response = nil
+      response = false
       if post_form = add_page.forms_with( :action =>  POSTS + ADD ).first
-        puts "POST FORM EXISTS"
-        post_form.field_with( :name => 'category' ).options.each { |opt| opt.select if opt.value == CATEGORY } if post_form.field_with( :name => 'category' )
-        post_form.blog_title = title
-        
-#         post_form.blog_t  = body
-        page = @agent.submit(post_form)
-        puts page.search("alert_message")
-        puts "-------"
+        category              = post_form.field_with( :name => 'category' )
+        category.options.each { |opt| opt.select if opt.value == CATEGORY } if category
+        post_form.blog_title  = title
+        post_form.blog_post   = body
+        response              = !@agent.submit( post_form, post_form.buttons.first ).search( SUCCESS ).empty?
       end
       response
     end
+    
+  private
     
     def authenticate
       if login_form         = login_page.forms_with( :action => LOGIN ).first
@@ -69,8 +62,5 @@ module Purevolume
     def add_page;     @agent.get( SITE + POSTS + ADD );       end
     def login_page;   @agent.get( SITE + LOGIN );             end
     
-    def posts_list_page
-      # @agent.get(SITE+POSTS+LIST);
-    end
   end
 end
