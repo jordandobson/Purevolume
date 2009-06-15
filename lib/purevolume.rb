@@ -10,7 +10,7 @@ module Purevolume
     POSTS     = '/dashboard?s=posts&tab='
     ADD       = 'add_post'
     LIST      = 'posts'
-    CATEGORY  = 'General'
+    GENERAL   = 'General'
     SUCCESS   = 'div.success_message'
     DASHBOARD = '/dashboard'
     
@@ -21,7 +21,7 @@ module Purevolume
       @username   = username
       @password   = password
       # Make sure I need these!
-      @dashboard  = @type = @profile = @blog = @name = nil
+      @dashboard  = @profile_url = @blog_url = @type =  nil
       @valid      = authenticated?
     end
 
@@ -37,29 +37,43 @@ module Purevolume
       response                = false
       if post_form            = add_post_page.forms_with( :action =>  POSTS + ADD ).first
         category              = post_form.field_with( :name => 'category' )
-        category.options.each { |opt| opt.select if opt.value == CATEGORY } if category
+        category.options.each { |opt| opt.select if opt.value == GENERAL } if category
         post_form.blog_title  = title
         post_form.blog_post   = body
         response              = !@agent.submit( post_form, post_form.buttons.first ).search( SUCCESS ).empty?
       end
       response
     end
-    
-    def profile_url
-      @dashboard.search(".dashboard_link_dropdown_item a").each do |link|
-        @profile = link['href'] if link.content == "Profile"
-      end
-      @profile
-    end
 
     def profile_name
-      @name = @dashboard.at( "a[href='#{DASHBOARD}'] span" ).content.sub( "Logged in as ", "" ) rescue nil
+      @dashboard.at( "a[href='#{DASHBOARD}'] span" ).content.sub( "Logged in as ", "" ) rescue nil
+    end
+
+    def profile_url
+      @dashboard.search(".dashboard_link_dropdown_item a").each do |link|
+        return @profile_url = SITE + link['href'] if link.content == "Profile"
+      end
+    end
+
+    def profile_type
+      @profile_url ||= profile_url
+      @type = @profile_url =~ /http:\/\/.*\/(\w*)\// ? $1.sub("rs", "r").to_sym : :artist
+    end
+    
+    def profile_blog_url
+      @profile_url ||= profile_url
+      @type        ||= profile_type
+      @blog_url = @profile_url + (@type == :listener ? "/blog" : "/posts")
     end
     
     def account_info
-      if @valid
-        {"rsp"=>{"site"=>{ "name"=>@name, "blog"=>@blog, "type"=>@type , "profile"=>@profile }, "stat"=>"ok"}}
-      end
+        { :rsp => { :site => { 
+          :name     => profile_name,
+          :profile  => profile_url, 
+          :type     => profile_type, 
+          :blog     => profile_blog_url }, 
+          :stat     => "ok" }
+        } if @valid
     end
     
   private
