@@ -61,7 +61,6 @@ module Purevolume
     end
 
   private
-
     def add_post_page;  @add_post_pg = @agent.get( "#{SITE}#{POSTS}#{ADD}" );    end
     def login_page;     @login_pg    = @agent.get( "#{SITE}#{LOGIN}" );          end
 
