@@ -4,16 +4,17 @@ require "mocha"
 
 class Purevolume::Client
   attr_accessor   :add_post_pg, :valid, :dashboard, :agent
-  public          :can_post?, :profile_url, :profile_name, :profile_type, :profile_blog_url, :latest_post_id, :success_response, :error_response
+  public          :can_post?, :profile_url, :profile_name, :profile_type, \
+                  :profile_blog_url, :latest_post_id, :success_response, :error_response
 end
 
 class TestPurevolume < Test::Unit::TestCase
 
   # IN FUTURE VERSIONS
-  # Ability to specify a category for a post
-  # Posting to billboard or promo Area
+  # Specify a category in listener posts
+  # Post an image in artist posts
+  # Add Post to billboard or promo Area
   # Reading in Posts
-  # Posting an image for artist posts
 
   def setup
     artist          = 'artist'
@@ -48,19 +49,19 @@ class TestPurevolume < Test::Unit::TestCase
                       "title" => "" },
                       "stat"  => "fail" }}
 
-    empty_page               = "<html><body></body></html>"
-    post_page                = "<html><body><form action='#{Purevolume::Client::POSTS}#{Purevolume::Client::ADD}'><select name='category'><option value='#{Purevolume::Client::GENERAL}'>General</option><option value='invalid'>Invalid</option></select><input name='blog_title' /><input name='blog_post' /></form></body></html>"
-    dashboard_artist_page    = "<html><body><a href='/dashboard'><span>Logged in as Glue Artist</span></a><div class='dashboard_link_dropdown_item'><a href='/GlueArtist'>Profile</a></div></body></html>"
-    dashboard_listener_page  = "<html><body><a href='/dashboard'><span>Logged in as Glue Listener</span></a><div class='dashboard_link_dropdown_item'><a href='/listeners/GlueListener'>Profile</a></div></body></html>"
-    post_list_page           = "<html><body><div id='posts'><table><tr><td><strong><a href='dashboard?s=posts&tab=posts&action=edit&id=#{@post_id}'>#{@title}</strong></td></tr></table></body></html>"
-    success_page             = "<html><body><div class='success_message'></div></body></html>"
+    empty_page                = "<html><body></body></html>"
+    post_page                 = "<html><body><form action='#{Purevolume::Client::POSTS}#{Purevolume::Client::ADD}'><select name='category'><option value='#{Purevolume::Client::GENERAL}'>General</option><option value='invalid'>Invalid</option></select><input name='blog_title' /><input name='blog_post' /></form></body></html>"
+    dashboard_artist_page     = "<html><body><a href='/dashboard'><span>Logged in as Glue Artist</span></a><div class='dashboard_link_dropdown_item'><a href='/GlueArtist'>Profile</a></div></body></html>"
+    dashboard_listener_page   = "<html><body><a href='/dashboard'><span>Logged in as Glue Listener</span></a><div class='dashboard_link_dropdown_item'><a href='/listeners/GlueListener'>Profile</a></div></body></html>"
+    post_list_page            = "<html><body><div id='posts'><table><tr><td><strong><a href='dashboard?s=posts&tab=posts&action=edit&id=#{@post_id}'>#{@title}</strong></td></tr></table></body></html>"
+    success_page              = "<html><body><div class='success_message'></div></body></html>"
 
-    @bad_page           = setup_mock_mechanize empty_page
-    @post_page          = setup_mock_mechanize post_page
-    @artist_dashboard   = setup_mock_mechanize dashboard_artist_page
-    @listener_dashboard = setup_mock_mechanize dashboard_listener_page
-    @list_page          = setup_mock_mechanize post_list_page
-    @success_page       = setup_mock_mechanize success_page
+    @bad_page                 = setup_mock_mechanize empty_page
+    @post_page                = setup_mock_mechanize post_page
+    @artist_dashboard         = setup_mock_mechanize dashboard_artist_page
+    @listener_dashboard       = setup_mock_mechanize dashboard_listener_page
+    @list_page                = setup_mock_mechanize post_list_page
+    @success_page             = setup_mock_mechanize success_page
   end
 
   def setup_mock_mechanize page
@@ -261,6 +262,7 @@ class TestPurevolume < Test::Unit::TestCase
                "url"   => "#{url}", 
                "id"    => "#{pid}"}, 
                "stat"  => "ok" }}
+    puts @error_response.inspect
 
     assert_equal expected,                 account.success_response( @title )
   end

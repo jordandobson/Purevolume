@@ -4,23 +4,70 @@
 
 == DESCRIPTION:
 
-A gem to post news/blog updates to Purevolume.com
+The Purevolume gem enables posting to Purevolume.com using your email/login-name, password and your blog title & body content. You can also access some basic info about a users account.
 
 == FEATURES/PROBLEMS:
 
-* Post Title and Text to Purevolume.com
+* Title & Body text is required 
+* Provides info about an account:
+  * Profile Name
+  * Profile URL
+  * Account Type (artist/listener)
+  * Blog URL
+* Can Check if login info is a valid user
+* This Gem is throughly tested
+* Image files are not yet implemented
+* Listeners posts are defaulted to General Category
+* Posting Only, Editing, Deleting & Reading in posts are included
 
 == SYNOPSIS:
 
-* Coming Soon
+1. Instantiate your account
 
+    * Provide the email and password
+    
+        account = Purevolume::Client.new( 'hello@gluenow.com', 'password' )
+      
+    * Or Provide login-name and password
+
+        account = Purevolume::Client.new( 'glue', 'password' )
+        
+2. Get more info about the user's account & check if they are a valid user
+
+    * Check if the user is valid
+    
+        account.valid_user?
+
+    * Get some info about this account - and recieve a hash or nil back
+    
+        response = account.account_info
+        
+        response #=> {"rsp"=>{"site"=>{"name"=>"Glue Artist", "profile"=>"http://www.purevolume.com/GlueArtist", "type"=>:artist, "blog"=>"http://www.purevolume.com/GlueArtist/posts"}, "stat"=>"ok"}}
+        
+3. Post your Content
+
+    * Both Title and Body are required - Set to a variable to check the response
+    
+        response = account.post("My Title", "My Body")
+
+4. Get a success or error hash back
+
+    * A Successful response would look like this
+    
+        response #=> {"rsp"=>{"post"=>{"title"=>"My Title", "url"=>"http://www.purevolume.com/GlueArtist/posts/228991", "id"=>"228991"}, "stat"=>"ok"}}
+    
+    * A Error response would look like this
+    
+        response #=> {"rsp"=>{"err"=>{"msg"=>"Post was unsuccessful.", "title"=>"My Title"}, "stat"=>"fail"}}
+        
+        
 == REQUIREMENTS:
 
 * Mechanize & Mocha (for tests)
 
 == INSTALL:
 
-* Not Yet Available
+* sudo gem install posterous -include-dependencies
 
 == LICENSE:
 

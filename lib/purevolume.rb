@@ -27,7 +27,8 @@ module Purevolume
 
     def authenticate
       @login_pg || login_page
-      login_form   = @login_pg.forms_with( :action => LOGIN ).first
+      login_form = @login_pg.forms_with( :action => LOGIN ).first
+      
       if login_form
         login_form.username = @username
         login_form.password = @password
@@ -39,7 +40,8 @@ module Purevolume
 
     def post title, body
       @add_post_pg || add_post_page
-      post_form       = @add_post_pg.forms_with( :action =>  "#{POSTS}#{ADD}" ).first
+      post_form = @add_post_pg.forms_with( :action =>  "#{POSTS}#{ADD}" ).first
+      
       if post_form
         category              = post_form.field_with( :name => 'category' )
         category.options.each { |opt| opt.select if opt.value == GENERAL } if category
@@ -105,12 +107,12 @@ module Purevolume
     def profile_blog_url
       @profile_url || profile_url
       @type        || profile_type
-      @blog_url     = @profile_url + (@type == :listener ? "/blog" : "/posts")
+      @blog_url = @profile_url + (@type == :listener ? "/blog" : "/posts")
     end
 
     def can_post?
       @add_post_pg || add_post_page
-      !@add_post_pg.search(   "form[action='#{POSTS}#{ADD}']" ).empty?
+      !@add_post_pg.search( "form[action='#{POSTS}#{ADD}']" ).empty?
     end
 
   end
