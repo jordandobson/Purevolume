@@ -262,7 +262,6 @@ class TestPurevolume < Test::Unit::TestCase
                "url"   => "#{url}", 
                "id"    => "#{pid}"}, 
                "stat"  => "ok" }}
-    puts @error_response.inspect
 
     assert_equal expected,                 account.success_response( @title )
   end
