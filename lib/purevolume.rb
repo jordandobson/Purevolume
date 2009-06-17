@@ -2,7 +2,7 @@ require 'rubygems'
 require 'mechanize'
 
 module Purevolume
-  VERSION = '0.1.1'
+  VERSION = '0.1.2'
 
   class Client
     SITE      = 'http://www.purevolume.com'

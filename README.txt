@@ -32,7 +32,13 @@ The Purevolume gem enables posting to Purevolume.com using your email/login-name
 
         account = Purevolume::Client.new( 'glue', 'password' )
         
-2. Get more info about the user's account & check if they are a valid user
+2. Authenticate the account
+
+    * Connect up to PureVolume
+  
+        account.authenticate   
+        
+3. Get more info about the user's account & check if they are a valid user
 
     * Check if the user is valid
     
@@ -44,13 +50,13 @@ The Purevolume gem enables posting to Purevolume.com using your email/login-name
         
         response #=> {"rsp"=>{"site"=>{"name"=>"Glue Artist", "profile"=>"http://www.purevolume.com/GlueArtist", "type"=>:artist, "blog"=>"http://www.purevolume.com/GlueArtist/posts"}, "stat"=>"ok"}}
         
-3. Post your Content
+4. Post your Content
 
     * Both Title and Body are required - Set to a variable to check the response
     
         response = account.post("My Title", "My Body")
 
-4. Get a success or error hash back
+5. Get a success or error hash back
 
     * A Successful response would look like this
     
